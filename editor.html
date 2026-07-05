@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self' data: blob:; script-src 'self'; style-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>關卡編輯器｜大家來找碴</title>
+<link rel="stylesheet" href="css/editor.css">
+</head>
+<body>
+<h1>🛠 關卡編輯器</h1>
+<p class="help">
+  1️⃣ 選擇關卡（或用「選擇圖片」載入新圖）→ 2️⃣ 需要的話微調面板範圍 →
+  3️⃣ 按「自動偵測差異」或直接在圖上<strong>左鍵點擊</strong>新增答案圈（<strong>右鍵</strong>刪除最近的圈）→
+  4️⃣ 複製下方 JSON 貼回 <code>js/levels.js</code>
+</p>
+
+<div class="toolbar">
+  <label>關卡：
+    <select id="selLevel"></select>
+  </label>
+  <label class="file-label">或選擇圖片 <input type="file" id="fileInput" accept="image/*"></label>
+  <label>圈半徑：<input type="range" id="radius" min="0.03" max="0.15" step="0.005" value="0.07">
+    <span id="radiusVal">0.07</span></label>
+  <button id="btnAuto" type="button">🔍 自動偵測差異</button>
+  <label>靈敏度：<input type="range" id="threshold" min="20" max="120" step="5" value="60"></label>
+  <button id="btnUndo" type="button">↩ 復原</button>
+  <button id="btnClear" type="button">🗑 清空</button>
+</div>
+
+<div class="toolbar">
+  <span>面板範圍（0~1 比例）</span>
+  A：<input type="number" id="ax" step="0.001" min="0" max="1">
+     <input type="number" id="ay" step="0.001" min="0" max="1">
+     <input type="number" id="aw" step="0.001" min="0" max="1">
+     <input type="number" id="ah" step="0.001" min="0" max="1">
+  B：<input type="number" id="bx" step="0.001" min="0" max="1">
+     <input type="number" id="by" step="0.001" min="0" max="1">
+     <input type="number" id="bw" step="0.001" min="0" max="1">
+     <input type="number" id="bh" step="0.001" min="0" max="1">
+  <button id="btnApplyRect" type="button">套用範圍</button>
+</div>
+
+<div class="panes">
+  <div><h3>A 圖</h3><canvas id="edA"></canvas></div>
+  <div><h3>B 圖</h3><canvas id="edB"></canvas></div>
+</div>
+
+<h3>輸出（貼回 levels.js 該關卡的 diffs / panelA / panelB）</h3>
+<div class="out-row">
+  <button id="btnCopy" type="button">📋 複製 JSON</button>
+  <button id="btnCopyObf" type="button">🔒 複製混淆版（data 字串）</button>
+</div>
+<textarea id="output" rows="14" spellcheck="false"></textarea>
+
+<script src="js/levels.js"></script>
+<script src="js/editor.js"></script>
+</body>
+</html>

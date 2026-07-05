@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<!-- 資安：內容安全政策（CSP）— 只允許載入自己網站的資源，阻擋外部腳本注入（XSS 防護） -->
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self' data: blob:; script-src 'self'; style-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-ancestors 'self'">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="北港義民廟《大家來找碴》— 找出 A/B 兩圖的 5 個不同之處，義犬將軍來發威！">
+<title>北港義民廟｜大家來找碴</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ========== 首頁（選關畫面） ========== -->
+<section id="screenHome" class="screen">
+  <header class="home-header">
+    <h1>大家來找碴 <span class="mag">🔍</span></h1>
+    <p class="subtitle">北港義民廟 × 義犬將軍</p>
+    <p class="rules">找出 A、B 兩圖之間 <strong>5 個不同</strong>的地方！<br>
+      時間 90 秒，點錯扣 5 秒。卡關就召喚「義犬將軍來發威」⚡（每關 3 次）</p>
+  </header>
+
+  <!-- 關卡卡片由 JS 動態產生 -->
+  <div id="levelGrid" class="level-grid" role="list"></div>
+
+  <footer class="home-footer">
+    <p>雲林北港義民廟 — 義犬將軍守護你 🐕</p>
+  </footer>
+</section>
+
+<!-- ========== 遊戲畫面 ========== -->
+<section id="screenGame" class="screen hidden">
+  <!-- stage：橫式模板舞台，背景使用模板圖 -->
+  <div id="stage">
+    <!-- 蓋住模板上寫死的 01:30 / 0/5，用即時文字取代 -->
+    <div id="timerBox" class="info-patch"><span id="timerText">01:30</span></div>
+    <div id="foundBox" class="info-patch"><span id="foundText">0 / 5</span></div>
+
+    <!-- 直式（手機）才顯示的簡易標題列 -->
+    <div id="portraitHeader">
+      <span class="ph-title">大家來找碴 🔍</span>
+      <span class="ph-info"><span id="timerTextP">01:30</span>｜<span id="foundTextP">0 / 5</span></span>
+    </div>
+
+    <!-- A / B 圖畫布 -->
+    <div id="panelWrapA" class="panel-wrap"><canvas id="panelA"></canvas><span class="panel-tag">A圖</span></div>
+    <div id="panelWrapB" class="panel-wrap"><canvas id="panelB"></canvas><span class="panel-tag">B圖</span></div>
+
+    <!-- 按鈕：橫式時是透明熱區疊在模板美術上；直式時顯示自己的樣式 -->
+    <button id="btnBack"  class="ctl-btn" type="button" aria-label="回選單">↩ 回選單</button>
+    <button id="btnStart" class="hot-btn" type="button" aria-label="開始遊戲"><span class="hot-label">開始遊戲</span></button>
+    <button id="btnSkill" class="hot-btn" type="button" aria-label="義犬將軍來發威">
+      <span class="hot-label">🐕 義犬將軍來發威</span>
+      <span id="skillCount" class="badge">3</span>
+    </button>
+
+    <!-- 義犬將軍發威特效 -->
+    <div id="dogFx" aria-hidden="true">🐕⚡</div>
+    <!-- 點錯的紅 X 特效 -->
+    <div id="missFx" aria-hidden="true">✖</div>
+  </div>
+
+  <!-- 直式提示：建議轉橫 -->
+  <div id="rotateHint" class="hidden">
+    <p>📱 建議將手機<strong>轉橫</strong>體驗完整廟宇風格畫面</p>
+    <button id="btnStayPortrait" type="button">直式繼續玩</button>
+  </div>
+</section>
+
+<!-- ========== 結算彈窗 ========== -->
+<div id="overlayResult" class="overlay hidden" role="dialog" aria-modal="true">
+  <div class="result-card">
+    <h2 id="resultTitle">過關！</h2>
+    <p id="resultStars" class="stars"></p>
+    <p id="resultDetail"></p>
+    <div class="result-btns">
+      <button id="btnShowAns" type="button" class="hidden">看答案</button>
+      <button id="btnRetry"   type="button">再玩一次</button>
+      <button id="btnNext"    type="button">下一關 ➜</button>
+      <button id="btnHome"    type="button">回選單</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/levels.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
