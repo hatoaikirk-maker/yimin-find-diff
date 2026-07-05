@@ -452,3 +452,113 @@ body.portrait .ctl-btn {
 }
 
 #btnStayPortrait { display: none; }
+
+/* ============================================================
+ * FIX v2：修正 HUD / 按鈕熱區錯位
+ * ------------------------------------------------------------
+ * 這一段一定要放在 style.css 最底部，用來覆蓋前面的定位。
+ * 修正項目：
+ * 1. 回選單不要壓到左上「剩餘時間」
+ * 2. 左上/右上即時數字框對齊模板數字區
+ * 3. 手機不要出現 hover 黃框卡住「開始遊戲」
+ * 4. 開始遊戲、義犬將軍熱區縮到真正按鈕位置
+ * 5. 技能次數 badge 移回義犬將軍按鈕右上角
+ * ============================================================ */
+
+/* 左上/右上數字覆蓋框：只蓋數字，不蓋標題 */
+#timerBox {
+  left: 6.85% !important;
+  top: 8.65% !important;
+  width: 11.65% !important;
+  height: 5.75% !important;
+  border-radius: 7px;
+  font-size: clamp(18px, 3.0cqw, 40px);
+}
+
+#foundBox {
+  left: 76.95% !important;
+  top: 8.65% !important;
+  width: 12.75% !important;
+  height: 5.75% !important;
+  border-radius: 7px;
+  font-size: clamp(18px, 3.0cqw, 40px);
+}
+
+/* 回選單移到左側空白處，不要壓住剩餘時間 */
+#btnBack,
+body.portrait #btnBack,
+body.portrait .ctl-btn {
+  left: 1.4% !important;
+  top: 14.3% !important;
+  z-index: 25;
+  padding: .25em .65em;
+  border-radius: 8px;
+  font-size: clamp(11px, 1.25cqw, 18px);
+  line-height: 1.2;
+}
+
+/* 觸控裝置會殘留 hover，先關掉，避免出現一大塊黃框 */
+.hot-btn:hover {
+  box-shadow: none !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hot-btn:hover {
+    box-shadow: 0 0 0 3px rgba(201,162,39,.8), 0 0 18px rgba(201,162,39,.6) !important;
+  }
+}
+
+/* 開始遊戲：熱區縮到紅色按鈕本體 */
+#btnStart,
+body.portrait #btnStart {
+  left: 33.2% !important;
+  top: 81.9% !important;
+  width: 25.1% !important;
+  height: 10.7% !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  order: initial !important;
+}
+
+/* 義犬將軍：熱區縮到狗狗＋綠色按鈕本體，不要跑到 B 圖下面 */
+#btnSkill,
+body.portrait #btnSkill {
+  left: 58.8% !important;
+  top: 79.6% !important;
+  width: 34.0% !important;
+  height: 14.6% !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  order: initial !important;
+}
+
+/* 技能數字移到按鈕右上角 */
+#btnSkill .badge,
+body.portrait #btnSkill .badge {
+  position: absolute !important;
+  right: 3.8% !important;
+  top: 6.5% !important;
+  min-width: 1.35em;
+  height: 1.35em;
+  border-width: 2px;
+  font-size: clamp(12px, 2.0cqw, 26px);
+  z-index: 3;
+}
+
+/* 確保直式保險覆蓋時，A/B 圖仍維持模板原位 */
+body.portrait #panelWrapA {
+  left: 2.2% !important;
+  top: 20.5% !important;
+  width: 44.6% !important;
+  height: 57.5% !important;
+}
+
+body.portrait #panelWrapB {
+  left: 49.7% !important;
+  top: 20.5% !important;
+  width: 44.6% !important;
+  height: 57.5% !important;
+}
+
