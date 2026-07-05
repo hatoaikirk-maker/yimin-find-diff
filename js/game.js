@@ -50,7 +50,13 @@
     running: false,
     skillLeft: SKILL_MAX,
     lastClick: 0,       // 防連點時間戳
-    showAnswers: false  // 結算後看答案模式
+    showAnswers: false, // 結算後看答案模式
+
+    // FIX：避免技能連點、過關/時間到重複觸發、延遲結算跑錯關
+    skillBusy: false,
+    ending: false,
+    winPending: false,
+    runId: 0
   };
 
   /* ---------- 工具：混淆解碼（支援 data:"字串" 的關卡） ---------- */
@@ -184,7 +190,7 @@
     timerText.textContent = t;  foundText.textContent = f;
     timerTextP.textContent = t; foundTextP.textContent = f;
     skillCount.textContent = String(S.skillLeft);
-    btnSkill.disabled = S.skillLeft <= 0;   // 用完就反灰停用
+    btnSkill.disabled = S.skillLeft <= 0 || S.skillBusy || S.ending || S.winPending;
     timerBoxWarn(S.timeLeft <= 15);
   }
   function timerBoxWarn(on) {
@@ -196,7 +202,7 @@
   function startTimer() {
     stopTimer();
     S.timerId = setInterval(() => {
-      if (!S.running) return;
+      if (!S.running || S.ending || S.winPending) return;
       S.timeLeft--;
       updateHUD();
       if (S.timeLeft <= 0) endLevel(false);
@@ -209,20 +215,30 @@
     if (document.hidden) {
       if (S.running) { S.running = false; pausedByHidden = true; }
     } else if (pausedByHidden) {
-      S.running = true; pausedByHidden = false;
+      if (!S.ending && !S.winPending && S.img) S.running = true;
+      pausedByHidden = false;
     }
   });
 
   /* ---------- 關卡流程 ---------- */
   function openLevel(index) {
+    S.runId++;
     S.levelIndex = index;
     const lv = LEVELS.levels[index];
     S.diffs = getDiffs(lv);
-    S.found.clear(); S.revealed.clear();
+    S.found.clear();
+    S.revealed.clear();
     S.timeLeft = GAME_TIME;
     S.skillLeft = SKILL_MAX;
     S.running = false;
     S.showAnswers = false;
+
+    // FIX：每次進關卡都重置防連點與結算狀態
+    S.skillBusy = false;
+    S.ending = false;
+    S.winPending = false;
+    S.lastClick = 0;
+    pausedByHidden = false;
 
     screenHome.classList.add("hidden");
     screenGame.classList.remove("hidden");
@@ -230,10 +246,18 @@
     btnStart.classList.remove("hidden");
 
     // 載入關卡大圖（encodeURI 處理中文與空白檔名）
+    const runId = S.runId;
     S.img = new Image();
     S.img.decoding = "async";
-    S.img.onload = () => { resizeCanvases(); updateHUD(); };
-    S.img.onerror = () => alert("圖片載入失敗：" + lv.file + "\n請確認檔案還在資料夾裡。");
+    S.img.onload = () => {
+      if (runId !== S.runId) return;
+      resizeCanvases();
+      updateHUD();
+    };
+    S.img.onerror = () => {
+      if (runId !== S.runId) return;
+      alert("圖片載入失敗：" + lv.file + "\n請確認檔案還在資料夾裡。");
+    };
     S.img.src = encodeURI(lv.file);
 
     checkOrientation();
@@ -241,7 +265,7 @@
   }
 
   function startPlay() {
-    if (S.running) return;
+    if (S.running || S.ending || S.winPending) return;
     S.running = true;
     btnStart.classList.add("hidden");
     startTimer();
@@ -249,9 +273,15 @@
   }
 
   function endLevel(win) {
+    // FIX：避免過關與時間到重複觸發
+    if (S.ending) return;
+    S.ending = true;
+    S.winPending = false;
+    S.skillBusy = false;
     S.running = false;
     stopTimer();
     S.showAnswers = false;
+    updateHUD();
 
     if (win) {
       sndWin();
@@ -280,9 +310,25 @@
     overlay.classList.remove("hidden");
   }
 
+  function scheduleWin() {
+    if (S.ending || S.winPending) return;
+    S.winPending = true;
+    S.skillBusy = false;
+    S.running = false;
+    stopTimer();
+    updateHUD();
+
+    const runId = S.runId;
+    setTimeout(() => {
+      if (runId !== S.runId || screenGame.classList.contains("hidden")) return;
+      S.winPending = false;
+      endLevel(true);
+    }, 450);
+  }
+
   /* ---------- 點擊判定 ---------- */
   function onPanelClick(e, cvs) {
-    if (!S.running) return;
+    if (!S.running || S.ending || S.winPending) return;
     const now = Date.now();
     if (now - S.lastClick < CLICK_COOLDOWN) return; // 防連點洗答案
     S.lastClick = now;
@@ -305,7 +351,7 @@
       S.found.add(hitIndex);
       sndHit();
       redraw(); updateHUD();
-      if (S.found.size >= S.diffs.length) setTimeout(() => endLevel(true), 450);
+      if (S.found.size >= S.diffs.length) scheduleWin();
     } else {
       // 點錯：扣時間、紅 X、震動
       S.timeLeft = Math.max(0, S.timeLeft - MISS_PENALTY);
@@ -329,12 +375,14 @@
 
   /* ---------- 義犬將軍來發威 ---------- */
   function useSkill() {
-    if (!S.running || S.skillLeft <= 0) return;
+    // FIX：技能動畫中不能連點，結算中也不能用
+    if (!S.running || S.skillLeft <= 0 || S.skillBusy || S.ending || S.winPending) return;
     // 找一個還沒被找到的差異
     let target = -1;
     for (let i = 0; i < S.diffs.length; i++) { if (!S.found.has(i)) { target = i; break; } }
     if (target < 0) return;
 
+    S.skillBusy = true;
     S.skillLeft--;
     sndDog();
     updateHUD();
@@ -355,12 +403,18 @@
       dogFx.style.top = endY + "px";
     });
 
+    const runId = S.runId;
     setTimeout(() => {
       dogFx.classList.remove("fly");
+      S.skillBusy = false;
+      updateHUD();
+
+      if (runId !== S.runId || !S.running || S.ending || S.winPending) return;
+
       S.found.add(target);
       S.revealed.add(target); // 金圈標記
       redraw(); updateHUD();
-      if (S.found.size >= S.diffs.length) setTimeout(() => endLevel(true), 450);
+      if (S.found.size >= S.diffs.length) scheduleWin();
     }, 750);
   }
 
@@ -412,22 +466,30 @@
   }
 
   function goHome() {
+    S.runId++;
     S.running = false;
+    S.skillBusy = false;
+    S.ending = false;
+    S.winPending = false;
+    pausedByHidden = false;
     stopTimer();
     S.img = null;
     overlay.classList.add("hidden");
     screenGame.classList.add("hidden");
     screenHome.classList.remove("hidden");
+    document.body.classList.remove("portrait");
     progress = loadProgress();
     buildHome();
   }
 
   /* ---------- 直式提醒 ---------- */
-  let portraitOk = false; // 使用者選擇直式繼續玩
   function checkOrientation() {
     const portrait = window.innerHeight > window.innerWidth;
-    rotateHint.classList.toggle("hidden", !portrait || portraitOk || screenGame.classList.contains("hidden"));
-    document.body.classList.toggle("portrait", portrait);
+
+    // FIX：大家來找碴固定使用 16:9 橫式模板
+    // 手機直式只顯示轉橫提示，不切換成直式堆疊版面
+    rotateHint.classList.toggle("hidden", !portrait || screenGame.classList.contains("hidden"));
+    document.body.classList.remove("portrait");
   }
 
   /* ---------- 事件綁定 ---------- */
@@ -446,7 +508,11 @@
     redraw();
     setTimeout(() => { overlay.classList.remove("hidden"); }, 4000); // 4 秒後回到結算
   });
-  btnStayPortrait.addEventListener("click", () => { portraitOk = true; checkOrientation(); });
+  if (btnStayPortrait) {
+    btnStayPortrait.addEventListener("click", () => {
+      rotateHint.classList.add("hidden");
+    });
+  }
 
   let resizeTid = 0;
   window.addEventListener("resize", () => {
