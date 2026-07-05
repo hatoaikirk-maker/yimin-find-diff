@@ -1,6 +1,6 @@
 /* ============================================================
  * 北港義民廟《大家來找碴》樣式表
- * 完整覆蓋版
+ * 最終完整覆蓋版
  * ============================================================ */
 
 :root {
@@ -17,18 +17,28 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent !important;
 }
 
-html, body {
+html,
+body {
+  width: 100%;
   height: 100%;
   background: var(--paper);
   color: var(--ink);
   font-family: "Noto Serif TC", "Kaiti TC", "DFKai-SB", "PMingLiU", serif;
-  -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
 }
 
-body {
-  overflow-x: hidden;
+button,
+button:focus,
+button:focus-visible,
+button:active {
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
 }
 
 .hidden {
@@ -40,6 +50,7 @@ body {
 }
 
 /* ==================== 首頁 ==================== */
+
 #screenHome {
   display: flex;
   flex-direction: column;
@@ -143,6 +154,7 @@ body {
 }
 
 /* ==================== 遊戲舞台 ==================== */
+
 #screenGame,
 body.portrait #screenGame {
   display: flex !important;
@@ -172,63 +184,79 @@ body.portrait #stage {
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-8px); }
-  75% { transform: translateX(8px); }
+  0%, 100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-8px);
+  }
+
+  75% {
+    transform: translateX(8px);
+  }
 }
 
-/* ==================== 即時資訊框 ==================== */
-.info-patch {
-  position: absolute;
-  z-index: 12;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--red-dk);
-  font-weight: 700;
-  pointer-events: none;
-  background: #f5e7c7;
+/* ==================== 左上 / 右上文字 ==================== */
+/* 重點：完全不加底色，避免色差 */
+
+.info-patch,
+body.portrait .info-patch {
+  position: absolute !important;
+  z-index: 12 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: transparent !important;
+  border: none !important;
   box-shadow: none !important;
+  color: #6b1e16 !important;
+  font-weight: 900 !important;
+  pointer-events: none !important;
+  text-shadow:
+    0 0 1px rgba(255, 245, 215, .55),
+    0 1px 0 rgba(255, 245, 215, .35) !important;
 }
 
 .info-patch span {
-  position: relative;
-  z-index: 2;
-  line-height: 1;
+  line-height: 1 !important;
 }
 
-/* 左上：剩餘時間 */
+/* 剩餘時間：只放文字，沒有任何底色 */
 #timerBox,
 body.portrait #timerBox {
-  left: 6.80% !important;
-  top: 8.45% !important;
-  width: 11.70% !important;
-  height: 5.60% !important;
-  border-radius: 15px !important;
-  font-size: clamp(18px, 2.78cqw, 38px) !important;
+  left: 7.35% !important;
+  top: 8.95% !important;
+  width: 10.35% !important;
+  height: 4.75% !important;
+  font-size: clamp(18px, 2.55cqw, 36px) !important;
+  border-radius: 0 !important;
 }
 
-/* 右上：已找到 */
+/* 已找到：只放文字，沒有任何底色 */
 #foundBox,
 body.portrait #foundBox {
-  left: 76.75% !important;
-  top: 8.45% !important;
-  width: 13.15% !important;
-  height: 5.60% !important;
-  border-radius: 15px !important;
-  font-size: clamp(18px, 2.78cqw, 38px) !important;
+  left: 77.55% !important;
+  top: 8.95% !important;
+  width: 10.75% !important;
+  height: 4.75% !important;
+  font-size: clamp(18px, 2.55cqw, 36px) !important;
+  border-radius: 0 !important;
 }
 
 #timerBox.warn {
-  color: #c40f0f;
+  color: #c40f0f !important;
   animation: pulse 1s infinite;
 }
 
 @keyframes pulse {
-  50% { opacity: .45; }
+  50% {
+    opacity: .45;
+  }
 }
 
-/* ==================== A / B 圖 ==================== */
+/* ==================== A / B 圖面板 ==================== */
+
 .panel-wrap,
 body.portrait .panel-wrap {
   position: absolute !important;
@@ -238,9 +266,9 @@ body.portrait .panel-wrap {
 
 #panelWrapA,
 body.portrait #panelWrapA {
-  left: 2.40% !important;
+  left: 2.38% !important;
   top: 21.10% !important;
-  width: 44.00% !important;
+  width: 44.05% !important;
   height: 55.85% !important;
 }
 
@@ -248,7 +276,7 @@ body.portrait #panelWrapA {
 body.portrait #panelWrapB {
   left: 49.95% !important;
   top: 21.10% !important;
-  width: 44.00% !important;
+  width: 44.05% !important;
   height: 55.85% !important;
 }
 
@@ -273,6 +301,7 @@ body.portrait #portraitHeader {
 }
 
 /* ==================== 按鈕熱區 ==================== */
+
 .hot-btn,
 .hot-btn:hover,
 .hot-btn:focus,
@@ -293,6 +322,19 @@ body.portrait .hot-btn:active {
   margin: 0 !important;
   appearance: none !important;
   -webkit-appearance: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* 保險：任何偽元素黃框都關掉 */
+.hot-btn::before,
+.hot-btn::after,
+body.portrait .hot-btn::before,
+body.portrait .hot-btn::after {
+  content: none !important;
+  display: none !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .hot-btn .hot-label,
@@ -322,6 +364,22 @@ body.portrait #btnSkill {
   border-radius: 26px !important;
   order: initial !important;
   overflow: visible !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+#btnSkill:hover,
+#btnSkill:focus,
+#btnSkill:focus-visible,
+#btnSkill:active,
+body.portrait #btnSkill:hover,
+body.portrait #btnSkill:focus,
+body.portrait #btnSkill:focus-visible,
+body.portrait #btnSkill:active {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  background: transparent !important;
 }
 
 #btnSkill:disabled {
@@ -329,29 +387,30 @@ body.portrait #btnSkill {
   cursor: not-allowed;
 }
 
-/* 技能次數 3：縮小並往內收，不超出框 */
+/* 技能次數 3：縮小、下移、往左收，確保在框內 */
 #btnSkill .badge,
 body.portrait #btnSkill .badge {
   position: absolute !important;
-  right: 3.10% !important;
-  top: 8.20% !important;
-  width: 1.02em !important;
-  min-width: 1.02em !important;
-  height: 1.02em !important;
+  right: 5.60% !important;
+  top: 18.00% !important;
+  width: 0.86em !important;
+  min-width: 0.86em !important;
+  height: 0.86em !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   background: var(--red) !important;
   color: #fff !important;
-  border: 2px solid var(--gold) !important;
+  border: 1.5px solid var(--gold) !important;
   border-radius: 50% !important;
-  font-size: clamp(11px, 1.42cqw, 18px) !important;
+  font-size: clamp(10px, 1.18cqw, 15px) !important;
   font-weight: 700 !important;
   line-height: 1 !important;
   z-index: 20 !important;
   opacity: 1 !important;
   pointer-events: none !important;
   transform: none !important;
+  box-shadow: none !important;
 }
 
 /* 回選單 */
@@ -380,6 +439,7 @@ body.portrait .ctl-btn {
 }
 
 /* ==================== 特效 ==================== */
+
 #dogFx {
   position: fixed;
   left: -100px;
@@ -416,12 +476,24 @@ body.portrait .ctl-btn {
 }
 
 @keyframes missPop {
-  0%   { opacity: 0; transform: translate(-50%,-50%) scale(.3); }
-  30%  { opacity: 1; transform: translate(-50%,-50%) scale(1.25); }
-  100% { opacity: 0; transform: translate(-50%,-50%) scale(1); }
+  0% {
+    opacity: 0;
+    transform: translate(-50%,-50%) scale(.3);
+  }
+
+  30% {
+    opacity: 1;
+    transform: translate(-50%,-50%) scale(1.25);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%,-50%) scale(1);
+  }
 }
 
 /* ==================== 轉橫提示 ==================== */
+
 #rotateHint {
   position: fixed;
   inset: auto 0 0 0;
@@ -440,6 +512,7 @@ body.portrait .ctl-btn {
 }
 
 /* ==================== 結算彈窗 ==================== */
+
 .overlay {
   position: fixed;
   inset: 0;
