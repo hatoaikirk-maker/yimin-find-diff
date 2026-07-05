@@ -13,6 +13,29 @@
 
   const XOR_KEY = "YiMinTemple2026"; // 必須與 game.js 相同
 
+  function xorDecode(b64) {
+    try {
+      const raw = atob(b64);
+      const bytes = new Uint8Array(raw.length);
+      for (let i = 0; i < raw.length; i++) {
+        bytes[i] = raw.charCodeAt(i) ^ XOR_KEY.charCodeAt(i % XOR_KEY.length);
+      }
+      return JSON.parse(new TextDecoder().decode(bytes));
+    } catch (e) {
+      console.error("關卡資料解碼失敗", e);
+      return null;
+    }
+  }
+
+  function getDiffsForEditor(level) {
+    if (Array.isArray(level.diffs)) return level.diffs;
+    if (typeof level.data === "string") {
+      const decoded = xorDecode(level.data);
+      if (decoded && Array.isArray(decoded.diffs)) return decoded.diffs;
+    }
+    return [];
+  }
+
   const $ = (id) => document.getElementById(id);
   const cvsA = $("edA"), cvsB = $("edB");
   const ctxA = cvsA.getContext("2d"), ctxB = cvsB.getContext("2d");
@@ -41,7 +64,7 @@
     const lv = LEVELS.levels[i];
     E.rectA = (lv.panelA || LEVELS.defaultPanelA).slice();
     E.rectB = (lv.panelB || LEVELS.defaultPanelB).slice();
-    E.diffs = Array.isArray(lv.diffs) ? lv.diffs.map(d => ({ x: d.x, y: d.y, r: d.r })) : [];
+    E.diffs = getDiffsForEditor(lv).map(d => ({ x: d.x, y: d.y, r: d.r }));
     E.history = [];
     loadImage(encodeURI(lv.file));
     syncRectInputs();
