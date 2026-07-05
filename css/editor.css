@@ -1,0 +1,41 @@
+/* 關卡編輯器樣式（工具頁，簡潔為主） */
+* { box-sizing: border-box; }
+body {
+  font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  background: #f4ecd8;
+  color: #33241a;
+  margin: 0;
+  padding: 16px 20px 40px;
+}
+h1 { margin: 0 0 6px; color: #7a2417; }
+.help { background: #fff7e2; border: 1px solid #d8b25a; border-radius: 8px; padding: 10px 14px; line-height: 1.8; }
+.toolbar {
+  display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+  margin: 12px 0; padding: 10px;
+  background: #fffdf5; border: 1px solid #ddc98f; border-radius: 8px;
+}
+.toolbar input[type="number"] { width: 76px; }
+.toolbar button, .out-row button {
+  background: #8f2a1c; color: #fff;
+  border: none; border-radius: 6px;
+  padding: 8px 14px; cursor: pointer; font-size: 14px;
+}
+.toolbar button:hover, .out-row button:hover { background: #5f1a10; }
+.file-label {
+  background: #1e5c50; color: #fff;
+  padding: 8px 14px; border-radius: 6px; cursor: pointer;
+}
+.file-label input { display: none; }
+.panes { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.panes h3 { margin: 4px 0; }
+.panes canvas {
+  width: 100%; border: 2px solid #8f2a1c; border-radius: 8px;
+  cursor: crosshair; background: #eee; display: block;
+}
+.out-row { display: flex; gap: 10px; margin-bottom: 8px; }
+#output {
+  width: 100%; font-family: Consolas, monospace; font-size: 13px;
+  border: 1px solid #ddc98f; border-radius: 8px; padding: 10px;
+  background: #fffdf5;
+}
+@media (max-width: 800px) { .panes { grid-template-columns: 1fr; } }
